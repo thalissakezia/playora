@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // login anônimo automático
+    function logado() { return request.auth != null; }
+    // membro = quem digitou o código da família (cria membros/{uid} com o código certo)
+    function membro() {
+      return logado() && exists(/databases/$(database)/documents/membros/$(request.auth.uid));
+    }
+    function nomeOk(n) { return n is string && n.size() > 0 && n.size() <= 18; }
+    function jogoOk(g) { return g in ['cobra', 'pulo', 'voo', 'frutas', 'cores', 'prateleira', 'corrida', 'copos', 'bolhas', 'lagoa', 'torre', 'sequencia', 'martelada', 'nave', 'contas', 'memoria2', 'trio', 'padrao', 'javi', 'numeros', 'estrada', 'descida', 'teclas']; }
+
+    // Código da família: guardado em config/familia (campo "codigo"). Ninguém lê nem grava pelo site.
+    match /config/{doc} { allow read, write: if false; }
+
+    // Entrada: só vira membro quem manda o código certo, uma vez
+    match /membros/{uid} {
+      allow read: if logado() && request.auth.uid == uid;
+      allow create: if logado() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['codigo'])
+        && request.resource.data.codigo is string
+        && request.resource.data.codigo == get(/databases/$(database)/documents/config/familia).data.codigo;
+      allow update, delete: if false;
+    }
+
+    // Apelidos únicos: nomes/{apelido-sem-acento-minúsculo} = {uid}. Só uma pessoa pode ter cada um.
+    match /nomes/{n} {
+      allow read: if false;
+      allow create: if membro()
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid
+        && n.size() > 0 && n.size() <= 80;
+      allow update: if membro() && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if membro() && resource.data.uid == request.auth.uid;
+    }
+
+    // Perfis: todos leem; cada pessoa só mexe no próprio
+    match /perfis/{uid} {
+      allow read: if membro();
+      allow create, update: if membro() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'av', 'at'])
+        && nomeOk(request.resource.data.name)
+        && request.resource.data.av is number
+        && request.resource.data.av >= 0 && request.resource.data.av < 100;
+      allow delete: if false;
+    }
+
+    // Recordes: todos leem; cada pessoa só grava o próprio e o recorde nunca diminui
+    match /scores/{id} {
+      allow read: if membro();
+      allow create: if membro()
+        && request.resource.data.keys().hasOnly(['game', 'pid', 'name', 'av', 'score', 'at'])
+        && request.resource.data.pid == request.auth.uid
+        && jogoOk(request.resource.data.game)
+        && id == request.resource.data.game + '__' + request.auth.uid
+        && nomeOk(request.resource.data.name)
+        && request.resource.data.av is number
+        && request.resource.data.score is number
+        && request.resource.data.score > 0 && request.resource.data.score <= 1000000;
+      allow update: if membro()
+        && resource.data.pid == request.auth.uid
+        && request.resource.data.pid == request.auth.uid
+        && request.resource.data.game == resource.data.game
+        && request.resource.data.keys().hasOnly(['game', 'pid', 'name', 'av', 'score', 'at'])
+        && nomeOk(request.resource.data.name)
+        && request.resource.data.score is number
+        && request.resource.data.score >= resource.data.score
+        && request.resource.data.score <= 1000000;
+      allow delete: if false;
+    }
+
+    // Histórico de partidas: só a própria pessoa lê e grava
+    match /hist/{uid} {
+      allow read: if membro() && request.auth.uid == uid;
+      allow write: if membro() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['g'])
+        && request.resource.data.g is map
+        && request.resource.data.g.size() <= 40;
+    }
+
+    // todo o resto fica bloqueado
+    match /{document=**} { allow read, write: if false; }
+  }
+}
