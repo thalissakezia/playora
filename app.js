@@ -252,7 +252,7 @@ function musicaPara(){clearInterval(musica.id);musica.id=null;musica.F=null;if(m
 const atualizaSomBtn=()=>document.querySelectorAll('.somb').forEach(b=>b.classList.toggle('mudo',!som));
 /* ---------- moedas e vidas (só aparecem no perfil e na tela de fim) ---------- */
 const ICO={"coin": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"32\" r=\"26\" fill=\"#ffd23f\" stroke=\"#3a2f6b\" stroke-width=\"5\"/><circle cx=\"32\" cy=\"32\" r=\"16\" fill=\"#ffb02e\" stroke=\"#3a2f6b\" stroke-width=\"3\"/><path d=\"M32 22v20M26 28h9a4 4 0 0 1 0 8h-9\" fill=\"none\" stroke=\"#3a2f6b\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M18 22a17 17 0 0 1 8-8\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\" opacity=\".8\"/></svg>", "vida": "<svg viewBox=\"0 0 64 64\"><path d=\"M32 56C12 42 6 31 6 21 6 13 12 8 19 8c6 0 10 3 13 8 3-5 7-8 13-8 7 0 13 5 13 13 0 10-6 21-26 35z\" fill=\"#ff5c8a\" stroke=\"#3a2f6b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M16 20c0-4 3-6 6-6\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\" opacity=\".85\"/></svg>", "trofeu": "<svg viewBox=\"0 0 64 64\"><path d=\"M16 10h32v14c0 10-7 17-16 17S16 34 16 24z\" fill=\"#ffd23f\" stroke=\"#3a2f6b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M16 16H7c0 10 4 15 11 16M48 16h9c0 10-4 15-11 16\" fill=\"none\" stroke=\"#3a2f6b\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M32 41v9\" stroke=\"#3a2f6b\" stroke-width=\"4\"/><rect x=\"20\" y=\"50\" width=\"24\" height=\"8\" rx=\"4\" fill=\"#ffb02e\" stroke=\"#3a2f6b\" stroke-width=\"4\"/></svg>", "coroa": "<svg viewBox=\"0 0 64 64\"><path d=\"M8 46L6 20l15 14 11-20 11 20 15-14-2 26z\" fill=\"#ffd23f\" stroke=\"#3a2f6b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><rect x=\"8\" y=\"46\" width=\"48\" height=\"9\" rx=\"4\" fill=\"#ffb02e\" stroke=\"#3a2f6b\" stroke-width=\"4\"/><circle cx=\"32\" cy=\"14\" r=\"4\" fill=\"#ff5c8a\" stroke=\"#3a2f6b\" stroke-width=\"3\"/></svg>"};
-const PRECO=20;
+const PRECO=50;
 let moedas=+(ls.get('pf-moedas')||0)||0,banco=0,cont=false,dado=0;
 const salvaCarteira=()=>ls.set('pf-moedas',String(moedas));
 const zeraRodada=()=>{banco=0;cont=false;dado=0};
@@ -379,7 +379,7 @@ function finaliza(total){
   $('volta').onclick=fecha;
   salvar(total).then(r=>{
     const pn=$('pn'),sv=$('sv'),mo=$('mo'),ct=$('cont');if(!pn)return;
-    const tot=total>0?3+(r.novo?10:0)+(r.novo&&r.pos===1?20:0):0,ganho=Math.max(0,tot-dado);
+    const tot=total>0?1+(r.novo?4:0)+(r.novo&&r.pos===1?5:0):0,ganho=Math.max(0,tot-dado);
     if(r.novo)sfx('recorde');if(ganho){dado+=ganho;moedas+=ganho;salvaCarteira();later(()=>sfx('moeda'),r.novo?700:250)}
     pn.textContent=r.pos?r.pos+'º lugar':'—';if(r.novo)$('pb').classList.add('rec1');
     sv.textContent=r.txt;
