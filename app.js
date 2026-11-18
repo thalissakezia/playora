@@ -158,7 +158,7 @@ function render(){
 }
 function registra(game,score){
   hist[game]=(hist[game]||[]).concat([[score,Date.now()]]).slice(-30);ls.set('pf-hist',JSON.stringify(hist));
-  if(db)db.doc('hist/'+pid).set({g:hist}).catch(()=>{});
+  if(db)db.doc('hist/'+pid).set({g:Object.fromEntries(Object.entries(hist).map(([k,v])=>[k,v.flat()]))}).catch(()=>{});
 }
 async function salvar(score){
   const g=GAMES[cur],game=cur;
@@ -168,7 +168,7 @@ async function salvar(score){
   if(antigo&&score<=antigo.score)return{pos:posDe(),txt:`Seu recorde é ${antigo.score} ${g.unid}.`};
   const doc={game,pid,name:eu.name,av:eu.av,score,at:new Date().toISOString()};
   scores=scores.filter(s=>!(s.game===game&&chave(s)===pid)).concat(doc);
-  if(db){try{await db.collection('scores').doc(game+'__'+pid).set(doc)}catch(e){$('status').textContent='Não deu para salvar no placar compartilhado; ficou só neste aparelho.';ls.set('pf-scores2',JSON.stringify(scores))}}
+  if(db){try{await db.collection('scores').doc(game+'__'+pid).set(doc)}catch(e){$('status').textContent='Não deu para salvar no placar compartilhado ('+(e&&e.code||'erro')+'); ficou só neste aparelho.';ls.set('pf-scores2',JSON.stringify(scores))}}
   else ls.set('pf-scores2',JSON.stringify(scores));
   render();
   return{pos:posDe(),txt:'Novo recorde!',novo:true};
@@ -1714,7 +1714,7 @@ const timeout=setTimeout(()=>{st.textContent='O placar compartilhado ainda não 
       if(!s.metadata.fromCache&&!conferiu){conferiu=true;const p=perfis[pid];if(eu.name&&(!p||p.name!==eu.name||p.av!==eu.av))db.doc('perfis/'+pid).set({name:eu.name,av:eu.av,at:new Date().toISOString()}).catch(()=>{})}
       render()},()=>{});
     db.doc('hist/'+pid).get().then(d=>{if(!d.exists)return;const g=(d.data()||{}).g||{};let mudou=false;
-      Object.keys(g).forEach(k=>{if(Array.isArray(g[k])&&g[k].length>(hist[k]||[]).length){hist[k]=g[k];mudou=true}});
+      Object.keys(g).forEach(k=>{if(Array.isArray(g[k])){const p=[];for(let i=0;i+1<g[k].length;i+=2)p.push([g[k][i],g[k][i+1]]);if(p.length>(hist[k]||[]).length){hist[k]=p;mudou=true}}});
       if(mudou){ls.set('pf-hist',JSON.stringify(hist));render()}}).catch(()=>{});
   }catch(e){clearTimeout(timeout);local()}
 })();
