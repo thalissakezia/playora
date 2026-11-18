@@ -58,7 +58,7 @@ service cloud.firestore {
         && nomeOk(request.resource.data.name)
         && request.resource.data.av is number
         && request.resource.data.score is number
-        && request.resource.data.score > 0 && request.resource.data.score <= 1000000;
+        && request.resource.data.score > 0 && request.resource.data.score <= 100000000;
       allow update: if membro()
         && resource.data.pid == request.auth.uid
         && request.resource.data.pid == request.auth.uid
@@ -67,7 +67,7 @@ service cloud.firestore {
         && nomeOk(request.resource.data.name)
         && request.resource.data.score is number
         && request.resource.data.score >= resource.data.score
-        && request.resource.data.score <= 1000000;
+        && request.resource.data.score <= 100000000;
       allow delete: if false;
     }
 

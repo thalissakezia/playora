@@ -63,7 +63,7 @@ firebase.json         hospedagem e cabeçalhos de segurança
 - **Apelido único:** não existem dois jogadores com o mesmo apelido. Maiúsculas, acentos e espaços extras não contam.
 - **Cada um mexe só no que é seu:** o jogador grava apenas o próprio perfil e os próprios recordes.
 - **Recorde nunca diminui:** uma pontuação menor não substitui a melhor.
-- **Limites:** pontuação máxima de 1.000.000 e só os jogos da lista são aceitos.
+- **Limites:** pontuação máxima de 100.000.000 e só os jogos da lista são aceitos.
 - **Cabeçalhos de segurança:** política de conteúdo restrita, sem iframes de terceiros e sem vazamento de referência.
 - **Textos digitados** (apelidos) são escapados, contra injeção de código.
 
