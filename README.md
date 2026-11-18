@@ -1,14 +1,31 @@
-# 🎮 Playora
+# Playora
 
 **Mini jogos para a família competir num ranking ao vivo.**
 
-🔗 **Jogar:** https://playora-game.web.app
+**Jogar:** https://playora-game.web.app
 
 Jogue sozinho ou desafie a família: cada recorde vai para um placar compartilhado, ganha moedas, XP e conquistas, e todo mundo vê a posição dos adversários em tempo real.
 
 ---
 
-## ✨ O que tem
+## Demonstração
+
+### Prints
+
+<p>
+  <img src="docs/print-1-boas-vindas.png" alt="Tela de boas-vindas" width="240">
+  <img src="docs/print-2-inicio.png" alt="Tela inicial" width="240">
+</p>
+
+Para acrescentar mais prints: coloque a imagem na pasta `docs/` e inclua uma linha `<img src="docs/nome-da-imagem.png" width="240">` aqui.
+
+### Vídeo
+
+Vídeo de demonstração: em breve.
+
+Para acrescentar: edite este README no GitHub, apague a linha acima e arraste o arquivo de vídeo para dentro do editor. O GitHub gera o link sozinho.
+
+## O que tem
 
 - **Dezenas de jogos rápidos** (cobra, corrida, prateleira, memória, torre, nave, contas e muito mais)
 - **Ranking ao vivo** por jogo, com os recordes de todos os jogadores
@@ -17,7 +34,7 @@ Jogue sozinho ou desafie a família: cada recorde vai para um placar compartilha
 - **Funciona no celular**, com toque e arrastar
 - **Sem instalar nada**: abre direto no navegador
 
-## 🧱 Como é feito
+## Como é feito
 
 | Parte | Tecnologia |
 |---|---|
@@ -27,7 +44,7 @@ Jogue sozinho ou desafie a família: cada recorde vai para um placar compartilha
 | Hospedagem | Firebase Hosting |
 | Publicação | GitHub Actions (automática a cada envio para `main`) |
 
-## 📁 Arquivos
+## Arquivos
 
 ```
 index.html            página principal
@@ -40,7 +57,7 @@ firebase.json         hospedagem e cabeçalhos de segurança
 .github/workflows/    publicação automática
 ```
 
-## 🔒 Segurança
+## Segurança
 
 - **Código da família:** só entra quem digitar o código certo. O banco confere com um documento secreto (`config/familia`) que ninguém lê pelo site.
 - **Apelido único:** não existem dois jogadores com o mesmo apelido. Maiúsculas, acentos e espaços extras não contam.
@@ -50,7 +67,7 @@ firebase.json         hospedagem e cabeçalhos de segurança
 - **Cabeçalhos de segurança:** política de conteúdo restrita, sem iframes de terceiros e sem vazamento de referência.
 - **Textos digitados** (apelidos) são escapados, contra injeção de código.
 
-## 🚀 Publicar
+## Publicar
 
 A cada envio para a branch `main`, o GitHub Actions publica o site no Firebase Hosting.
 
@@ -61,9 +78,9 @@ Segredos necessários em **Settings → Secrets and variables → Actions**:
 | `FIREBASE_SERVICE_ACCOUNT` | conteúdo do arquivo `.json` da conta de serviço |
 | `FIREBASE_PROJECT_ID` | ID do projeto Firebase |
 
-> ⚠️ Nunca coloque o arquivo `.json` da conta de serviço no repositório.
+> Nunca coloque o arquivo `.json` da conta de serviço no repositório.
 
-## 🛠️ Configurar do zero
+## Configurar do zero
 
 1. **Firebase:** crie o projeto em console.firebase.google.com (plano Spark, grátis).
 2. **Authentication:** ative o login **Anônimo**.
@@ -75,14 +92,14 @@ Segredos necessários em **Settings → Secrets and variables → Actions**:
 
 Sem a configuração do Firebase, o Playora funciona, mas guarda o placar só no aparelho.
 
-## ➕ Adicionar um jogo novo
+## Adicionar um jogo novo
 
 Acrescente o nome do jogo na lista `jogoOk` do arquivo `firestore.rules` e publique as regras de novo, senão o banco recusa as pontuações.
 
-## 🔑 Trocar o código da família
+## Trocar o código da família
 
 Edite o campo `codigo` do documento `config/familia`. Quem já entrou continua dentro. Para expulsar alguém, apague o documento dessa pessoa em `membros`.
 
 ---
 
-Feito com carinho para a família. 💜
+Feito com carinho para a família.
