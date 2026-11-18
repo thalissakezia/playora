@@ -343,7 +343,6 @@ function comeca(continua){
   if(continua)tIni=agora()-tUsado;else{zeraRodada();tIni=agora();tUsado=0}
   entrou=agora();emJogo=true;pausado=false;$('sair').hidden=true;
   $('modal').classList.add('jogo');$('tmr').hidden=false;$('tmt').textContent=fmtRel(agora()-tIni);clearInterval(tInt);tInt=setInterval(atualizaRel,250);
-  try{const r=document.documentElement.requestFullscreen&&!document.fullscreenElement?document.documentElement.requestFullscreen():null;if(r&&r.catch)r.catch(()=>{})}catch(e){}
   $('modal').classList.remove('cena');JOGOS[cur]();if(!stage.querySelector('canvas'))$('modal').classList.add('cena');
   musicaLiga(faixaDe(cur));
 }
