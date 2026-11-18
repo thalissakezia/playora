@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "playora-game",
     "public": ".",
     "ignore": [
       "firebase.json",
