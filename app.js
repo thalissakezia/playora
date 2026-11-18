@@ -158,7 +158,7 @@ function render(){
 }
 function registra(game,score){
   hist[game]=(hist[game]||[]).concat([[score,Date.now()]]).slice(-30);ls.set('pf-hist',JSON.stringify(hist));
-  if(db)db.doc('hist/'+pid).set({g:Object.fromEntries(Object.entries(hist).map(([k,v])=>[k,v.flat()]))}).catch(()=>{});
+  if(db)try{db.doc('hist/'+pid).set({g:Object.fromEntries(Object.entries(hist).map(([k,v])=>[k,v.flat()]))}).catch(()=>{})}catch(e){}
 }
 async function salvar(score){
   const g=GAMES[cur],game=cur;
