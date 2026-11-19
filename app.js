@@ -642,15 +642,22 @@ const JOGOS={
     const{c,x,pts}=tela();const I=imgsDesc(),DD={"bg": [470, 718], "capL": [60, 43], "capR": [59, 43], "bola": [66, 62], "spk": [40, 143], "midL": [24, 43], "midR": [24, 43]},PF=.638,TOPY=64;const R=12,GW=74;let b={x:180,y:120,vx:0,vy:0},rows=[],score=0,v=1.1,hold=0,keys=0,falta=0;pts(0);
     for(let y=200;y<H+120;y+=110)rows.push({y,gx:rnd(10,W-GW-10),ok:false});
     const set=e=>{const r=c.getBoundingClientRect();hold=e.clientX-r.left<r.width/2?-1:1};
-    c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);set(e)});c.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')set(e)});
-    c.addEventListener('pointerup',()=>hold=0);c.addEventListener('pointercancel',()=>hold=0);
+    /* deslizar o dedo move a bolinha junto; um toque simples em um dos lados ainda empurra para aquele lado */
+    let dr=null;
+    c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);dr={sx:e.clientX,lx:e.clientX,m:false};set(e)});
+    c.addEventListener('pointermove',e=>{if(!dr)return;
+      if(!dr.m&&Math.abs(e.clientX-dr.sx)>5){dr.m=true;hold=0}
+      if(dr.m){const r=c.getBoundingClientRect();b.x=Math.max(R,Math.min(W-R,b.x+(e.clientX-dr.lx)*W/r.width*1.5));b.vx=0}
+      dr.lx=e.clientX});
+    const solta=()=>{hold=0;dr=null};
+    c.addEventListener('pointerup',solta);c.addEventListener('pointercancel',solta);
     onKey(e=>{if(e.key==='ArrowLeft')keys=-1;if(e.key==='ArrowRight')keys=1});
     const up=e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight')keys=0};window.addEventListener('keyup',up);limpa.push(()=>window.removeEventListener('keyup',up));
     loop(dt=>{
       if(!I.bg.naturalWidth||!I.midL.naturalWidth||!I.midR.naturalWidth||!I.bola.naturalWidth||!I.spk.naturalWidth){x.fillStyle='#3a5fe0';x.fillRect(0,0,W,H);return}
       v=Math.min(4.2,1.1+score*.045);rows.forEach(r=>r.y-=v*dt);
       const last=rows[rows.length-1];if(last.y<H+10)rows.push({y:last.y+110,gx:rnd(10,W-GW-10),ok:false});rows=rows.filter(r=>r.y>-20);
-      const d=hold||keys;b.vx=(b.vx+d*.8*dt)*Math.pow(.85,dt);b.vx=Math.max(-6,Math.min(6,b.vx));b.x=Math.max(R,Math.min(W-R,b.x+b.vx*dt));
+      const d=hold||keys;b.vx=(b.vx+d*1.3*dt)*Math.pow(.82,dt);b.vx=Math.max(-8,Math.min(8,b.vx));b.x=Math.max(R,Math.min(W-R,b.x+b.vx*dt));
       b.vy=Math.min(9,b.vy+.45*dt);b.y+=b.vy*dt;
       for(const r of rows){const noBuraco=b.x-R*.6>r.gx&&b.x+R*.6<r.gx+GW;if(!noBuraco&&b.y+R>=r.y&&b.y+R<=r.y+18&&b.vy>=-v){b.y=r.y-R;b.vy=0}
         if(!r.ok&&b.y-R>r.y+10){r.ok=true;score++;pts(score)}}
