@@ -7,7 +7,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <header class="band" id="topo">
@@ -43,9 +43,8 @@
     <h2 style="font-size:30px">Bem-vindo ao Playora!</h2>
     <p style="margin:0;font-weight:600">Escolha seu apelido e o bichinho que é a sua cara. Este aparelho vai lembrar de você nas próximas vezes.</p>
     <label class="campo">Seu apelido<input id="bNome" maxlength="18" placeholder="Ex.: Tia Bia" autocomplete="nickname"></label>
-    <label class="campo">Crie um PIN (4 a 8 números)<input id="bPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="Para recuperar sua conta" autocomplete="new-password"></label>
     <span class="poslbl">Seu personagem</span><div class="avs" id="bAvs"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="go" id="bOk" disabled>Entrar</button><button class="ghost" id="bJa" type="button">Já tenho conta</button></div>
+    <div><button class="go" id="bOk" disabled>Entrar</button></div>
   </div></div>
 </div>
 
@@ -80,9 +79,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=15"></script>
-<script src="assets.js?v=15"></script>
-<script src="app.js?v=15"></script>
+<script src="firebase-config.js?v=16"></script>
+<script src="assets.js?v=16"></script>
+<script src="app.js?v=16"></script>
 
 </body>
 </html>
