@@ -322,7 +322,7 @@ function desenhaPerfil(){
     <div class="carteira"><span class="chip">${ICO.coin}${moedas}<small>moedas</small></span><span class="chip">${ICO.trofeu}${rg.primeiros}<small>1º lugares</small></span><span class="chip">${ICO.coroa}${rg.pos>=0?(rg.pos+1)+'º':'-'}<small>no geral</small></span></div>
     <div class="loja"><p><b>Moedas:</b> quando você perde, ${PRECO} moedas deixam você continuar de onde parou. A pontuação fica guardada e a nova rodada soma com ela.</p><p class="tend">Ganhe moedas jogando: 3 por partida, +10 por recorde seu e +20 por ficar em 1º lugar.</p></div>
     <div><button class="ghost" id="pEd">Trocar apelido ou personagem</button></div>
-    ${temFb()?(protegida()?'<p class="status">Conta protegida por PIN. Para entrar em outro aparelho, use o apelido e o PIN.</p>':'<button class="ghost" id="pProt" type="button">Proteger conta com PIN</button>'):''}<div class="edit" id="pEdBox" hidden><label class="campo">Apelido<input id="pNome" maxlength="18" value="${esc(eu.name)}"></label><span class="poslbl">Personagem</span><div class="avs" id="pAvs"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="pOk">Salvar</button><button class="ghost" id="pCan">Cancelar</button></div></div>
+    ${temFb()?(protegida()?'<p class="status">Conta protegida por PIN. Para entrar em outro aparelho, use o apelido e o PIN.</p>':'<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ghost" id="pProt" type="button">Proteger conta com PIN</button><button class="ghost" id="pJa" type="button">Já tenho conta</button></div>'):''}<div class="edit" id="pEdBox" hidden><label class="campo">Apelido<input id="pNome" maxlength="18" value="${esc(eu.name)}"></label><span class="poslbl">Personagem</span><div class="avs" id="pAvs"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="pOk">Salvar</button><button class="ghost" id="pCan">Cancelar</button></div></div>
     <h3 style="font-size:24px">Análise</h3>
     <p class="resumo">${resumo}</p>
     <div class="cats">${cats.map(c=>{const[l,cor]=nivTxt(c);return `<div class="ck"><h4>${c.nome}</h4><span class="lv" style="color:${cor}">${l}</span><div class="meter"><i style="width:${c.niv===null?0:Math.max(6,c.niv*100)}%;background:${cor}"></i></div>${tdTxt(c.tend)}<span class="tend">${c.jogados} de ${c.total} jogos · ${c.part} ${c.part===1?'partida':'partidas'}</span></div>`}).join('')}</div>
@@ -332,6 +332,7 @@ function desenhaPerfil(){
     ${CATS.flatMap(c=>c[3]).map(k=>{const j=jogos[k];return `<tr><td><span class="jg">${IC[k]}${GAMES[k].nome}</span></td><td class="r">${j.rec===null?'—':j.rec}</td><td class="r">${j.pos?j.pos+'º de '+j.n:'—'}</td><td class="r hm">${j.part}</td><td class="r">${seta(j.tend)}</td></tr>`}).join('')}
     </tbody></table>`;
   let novoAv=eu.av;
+  if($('pJa'))$('pJa').onclick=()=>fluxoEntrar();
   if($('pProt'))$('pProt').onclick=async()=>{if(await fluxoProteger(eu.name))desenhaPerfil()};
   $('pEd').onclick=()=>{editando=true;$('pEdBox').hidden=false;$('pEd').parentElement.hidden=true;escolheAv($('pAvs'),eu.av,a=>novoAv=a);$('pNome').focus()};
   $('pCan').onclick=()=>{editando=false;desenhaPerfil()};
@@ -1870,6 +1871,8 @@ async function conectaDb(){
     try{
       if(!firebase.apps.length)firebase.initializeApp(cfg);
       const auth=firebase.auth();
+      /* espera o Firebase restaurar o login guardado; sem isso ele criava uma conta anônima nova a cada atualização */
+      await new Promise(ok=>{const off=auth.onAuthStateChanged(()=>{off();ok()});setTimeout(ok,6000)});
       if(!auth.currentUser)await auth.signInAnonymously();
       pid=auth.currentUser.uid;ls.set('pf-id',pid);
       const f=firebase.firestore(),mb=f.doc('membros/'+pid);
