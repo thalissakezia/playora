@@ -1832,7 +1832,7 @@ function pedeRec(modo,nome0,tenta){
     const m=document.createElement('div');m.className='modal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
     const tit={proteger:'Proteja sua conta',entrar:'Entrar na minha conta',confirma:'Confirme seu PIN'}[modo];
     const txt={proteger:'Crie um PIN de 4 a 8 números. Se você trocar de celular ou o navegador esquecer você, é só entrar com o apelido e o PIN para recuperar tudo.',entrar:'Digite o apelido e o PIN que você criou para recuperar seus pontos e seu histórico.',confirma:'Para trocar o apelido, digite o seu PIN.'}[modo];
-    m.innerHTML=`<div class="board perf"><div class="pstage"><h2 style="font-size:26px">${tit}</h2><p style="margin:0;font-weight:600">${txt}</p>${modo==='entrar'?'<label class="campo">Apelido<input id="rcN" maxlength="18" autocomplete="nickname"></label>':''}<label class="campo">PIN<input id="rcP" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="${modo==='proteger'?'new-password':'current-password'}"></label><p class="status" id="rcE" style="margin:6px 0 0;color:#ff7aa8!important;font-weight:800" hidden></p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="rcOk">${modo==='entrar'?'Entrar':'Salvar'}</button><button class="ghost" id="rcNo">${modo==='proteger'?'Agora não':'Cancelar'}</button></div></div></div>`;
+    m.innerHTML=`<div class="board perf"><div class="pstage"><h2 style="font-size:26px">${tit}</h2><p style="margin:0;font-weight:600">${txt}</p>${modo==='entrar'?'<label class="campo">Apelido<input id="rcN" maxlength="18" autocomplete="nickname"></label>':''}<label class="campo">PIN<input id="rcP" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="${modo==='proteger'?'new-password':'current-password'}"></label><p class="status" id="rcE" style="margin:6px 0 0;color:#ff7aa8!important;font-weight:800" hidden></p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="rcOk">${modo==='entrar'?'Entrar':'Salvar'}</button><button class="ghost" id="rcNo">${modo==='proteger'?'Agora não':'Cancelar'}</button>${modo==='proteger'?'<button class="ghost" id="rcJa" type="button">Já tenho conta</button>':''}</div></div></div>`;
     document.body.appendChild(m);document.body.style.overflow='hidden';
     const q=i=>m.querySelector(i),er=q('#rcE'),pin=q('#rcP'),bt=q('#rcOk');
     const erro=t=>{er.textContent=t;er.hidden=!t};
@@ -1846,7 +1846,7 @@ function pedeRec(modo,nome0,tenta){
       ocupado=false;bt.disabled=false;
       if(e){erro(e);return}
       fecha(true)};
-    bt.onclick=ok;q('#rcNo').onclick=()=>fecha(false);
+    bt.onclick=ok;q('#rcNo').onclick=()=>fecha(false);if(q('#rcJa'))q('#rcJa').onclick=()=>{fecha(false);fluxoEntrar()};
     pin.addEventListener('keydown',e=>{if(e.key==='Enter')ok()});
     setTimeout(()=>(modo==='entrar'?q('#rcN'):pin).focus(),50);
   });
@@ -1900,7 +1900,7 @@ const timeout=setTimeout(()=>{st.textContent='O placar compartilhado ainda não 
   try{
     db=await conectaDb();
     if(!db){clearTimeout(timeout);local();return}
-    if(eu.name&&authOk()&&!protegida())setTimeout(()=>{if($('modal').hidden&&$('boas').hidden)fluxoProteger(eu.name)},2500);
+    if(eu.name&&authOk()&&!protegida()&&ls.get('pf-lembra')!==new Date().toDateString())setTimeout(()=>{if($('modal').hidden&&$('boas').hidden&&$('perfil').hidden){ls.set('pf-lembra',new Date().toDateString());fluxoProteger(eu.name)}},2500);
     db.collection('scores').onSnapshot(s=>{
       scores=s.docs.map(d=>d.data()).filter(Boolean);render();
       if(!s.metadata.fromCache){clearTimeout(timeout);st.textContent='Placar compartilhado com a família, ao vivo.'}
