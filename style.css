@@ -571,3 +571,17 @@ body{background:#0b0a24;color:#f3f1ff;padding-bottom:84px}
 .kb.bk{max-width:52px;flex:1.4}.kb.bk svg{width:22px;height:22px}
 .kb.tap{transform:translateY(2px);background:#52b568}
 .kb.off{opacity:.25}
+
+.modal.jogo.cena-contas .board{background:#2f5a47 url("fundo-contas.webp?v=1") center/cover no-repeat;padding-top:max(100px,13dvh);color:#fff}
+.modal.jogo.cena-contas .x,.modal.jogo.cena-contas .somb{background:#f6efdd;border:3px solid #1f3a30;color:#1f3a30;box-shadow:none;opacity:1;z-index:5;top:12px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
+.cena-contas .somb svg{stroke:#1f3a30}
+.modal.jogo.cena-contas .tmr{z-index:5;top:16px;background:#f6efdd;border:3px solid #1f3a30;color:#1f3a30;border-radius:999px;padding:4px 14px;font-size:15px}
+.cena-contas .hud{padding:0 6px}
+.cena-contas .hud span{background:none;color:#fff;font:800 20px Nunito,sans-serif;text-shadow:0 2px 0 #0004}
+.cena-contas .bar{height:12px;background:#f3ead2;border:0;border-radius:99px;margin:6px 6px 0;width:calc(100% - 12px)}
+.cena-contas .bar i{background:#6f6af0;border-radius:99px}
+.cena-contas .big{color:#fff;text-shadow:0 3px 0 #0005;font-size:56px}
+.modal.jogo.cena-contas .opts{flex:0 1 auto;width:min(100%,420px);gap:14px;margin:auto 0 150px;align-content:center}
+.modal.jogo.cena-contas .opts>*{aspect-ratio:1/.95!important;min-height:0;height:auto}
+.cena-contas .opts button{background:#f6efdd;color:#25332d;border:0;border-radius:22px;box-shadow:0 4px 0 #0003;font:800 44px Nunito,sans-serif}
+.cena-contas .opts .ok{background:#5cc27a;color:#fff}.cena-contas .opts .no{background:#ff6b60;color:#fff}

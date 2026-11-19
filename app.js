@@ -1201,6 +1201,7 @@ const JOGOS={
     });
   },  contas(){
     clear();acabou=false;let score=0,lim=7000,t0=0,res=0,trava=false;
+    const modal=$('modal');modal.classList.add('cena-contas');limpa.push(()=>modal.classList.remove('cena-contas'));
     stage.innerHTML=`<div class="hud"><span id="pt">0 acertos</span><span></span></div><div class="bar"><i id="bt" style="width:100%"></i></div><div class="big" id="q" style="padding:12px 0">&nbsp;</div><div class="opts" id="op"></div>`;
     const nova=()=>{
       const n=score;let a,b,s,ops=['+','−'];if(n>=5)ops.push('×');if(n>=12)ops.push('÷');const o=ops[rnd(0,ops.length-1)],M=10+n*4;
