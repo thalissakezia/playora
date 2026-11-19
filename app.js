@@ -1334,10 +1334,10 @@ const JOGOS={
     const gera=()=>{while(rows.length<mx+12){
       const prev=rows[rows.length-1],nv=[];let sem=prev.slice();
       const livre=xx=>nv.every(q=>Math.abs(q.x-xx)>=84);
-      while(sem.length){const p=sem[0];let xx=Math.max(40,Math.min(W-40,p.x+rnd(-75,75))),tent=0;while(!livre(xx)&&tent++<12)xx=Math.max(40,Math.min(W-40,p.x+rnd(-75,75)));
+      while(sem.length){const p=sem[0];let xx=Math.max(40,Math.min(W-40,p.x+rnd(-115,115))),tent=0;while(!livre(xx)&&tent++<12)xx=Math.max(40,Math.min(W-40,p.x+rnd(-115,115)));
         if(!livre(xx)){const j=nv.reduce((m,q)=>Math.abs(q.x-p.x)<Math.abs(m.x-p.x)?q:m,nv[0]);sem=sem.filter(q=>Math.abs(q.x-j.x)>ALC-12);continue}
         nv.push({x:xx,rot:Math.random()*6.28});sem=sem.filter(q=>Math.abs(q.x-xx)>ALC-12)}
-      const extra=Math.random()<.55?1:0+(Math.random()<.25?1:0);
+      const extra=Math.random()<.2?1:0;
       for(let e=0;e<extra&&nv.length<4;e++){let xx=rnd(40,W-40),tent=0;while(!livre(xx)&&tent++<14)xx=rnd(40,W-40);if(livre(xx))nv.push({x:xx,rot:Math.random()*6.28})}
       rows.push(nv)}};gera();
     const ry=i=>BASE-(i*DY-cam);
@@ -1367,7 +1367,7 @@ const JOGOS={
     const ring=(o)=>{const k=o.t/30;if(k<0)return;x.globalAlpha=Math.max(0,.75*(1-k));x.strokeStyle='#e8fbff';x.lineWidth=3-k*1.5;x.beginPath();x.arc(o.x,o.y,18+k*34,0,7);x.stroke();x.globalAlpha=Math.max(0,.4*(1-k));x.strokeStyle='#7fe0ff';x.lineWidth=2;x.beginPath();x.arc(o.x,o.y,26+k*44,0,7);x.stroke();x.globalAlpha=1};
     loop(dt=>{
       t+=dt;
-      if(comecou){tc+=dt;cam+=(.6+Math.min(2.7,tc*.00065))*dt}
+      if(comecou){tc+=dt;cam+=(.7+Math.min(2.9,tc*.0008))*dt}
       if(sqz>0)sqz-=dt;if(nao){nao.t+=dt;if(nao.t>14)nao=null}
       if(anim){anim.t+=dt/9;if(anim.t>=1){const ok=anim.ok,pi=anim.para.i,px=anim.para.x;anim=null;
         if(!ok){sapoCai(px,ry(pi))}
