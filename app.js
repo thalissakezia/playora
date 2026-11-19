@@ -276,6 +276,10 @@ function erroNome(input,msg){
 /* devolve null se salvou, ou o texto do erro (apelido repetido) */
 async function salvaPerfil(nome,av){
   const nid=normNome(nome);
+  if(eu.name&&normNome(eu.name)!==nid&&protegida()){
+    const ok=await pedeRec('confirma',nome,async r=>{try{const u=firebase.auth().currentUser;await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,senhaDe(r.pin)));await u.updateEmail(await emailDe(nome));return null}catch(e){return erroAuth(e)}});
+    if(!ok)return 'Troca de apelido cancelada.';
+  }
   if(Object.entries(perfis).some(([id,p])=>id!==pid&&p&&p.name&&normNome(p.name)===nid))return MSG_NOME;
   if(db){
     try{await db.doc('nomes/'+encodeURIComponent(nid)).set({uid:pid})}
@@ -318,7 +322,7 @@ function desenhaPerfil(){
     <div class="carteira"><span class="chip">${ICO.coin}${moedas}<small>moedas</small></span><span class="chip">${ICO.trofeu}${rg.primeiros}<small>1º lugares</small></span><span class="chip">${ICO.coroa}${rg.pos>=0?(rg.pos+1)+'º':'-'}<small>no geral</small></span></div>
     <div class="loja"><p><b>Moedas:</b> quando você perde, ${PRECO} moedas deixam você continuar de onde parou. A pontuação fica guardada e a nova rodada soma com ela.</p><p class="tend">Ganhe moedas jogando: 3 por partida, +10 por recorde seu e +20 por ficar em 1º lugar.</p></div>
     <div><button class="ghost" id="pEd">Trocar apelido ou personagem</button></div>
-    <div class="edit" id="pEdBox" hidden><label class="campo">Apelido<input id="pNome" maxlength="18" value="${esc(eu.name)}"></label><span class="poslbl">Personagem</span><div class="avs" id="pAvs"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="pOk">Salvar</button><button class="ghost" id="pCan">Cancelar</button></div></div>
+    ${temFb()?(protegida()?'<p class="status">Conta protegida por PIN. Para entrar em outro aparelho, use o apelido e o PIN.</p>':'<button class="ghost" id="pProt" type="button">Proteger conta com PIN</button>'):''}<div class="edit" id="pEdBox" hidden><label class="campo">Apelido<input id="pNome" maxlength="18" value="${esc(eu.name)}"></label><span class="poslbl">Personagem</span><div class="avs" id="pAvs"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="pOk">Salvar</button><button class="ghost" id="pCan">Cancelar</button></div></div>
     <h3 style="font-size:24px">Análise</h3>
     <p class="resumo">${resumo}</p>
     <div class="cats">${cats.map(c=>{const[l,cor]=nivTxt(c);return `<div class="ck"><h4>${c.nome}</h4><span class="lv" style="color:${cor}">${l}</span><div class="meter"><i style="width:${c.niv===null?0:Math.max(6,c.niv*100)}%;background:${cor}"></i></div>${tdTxt(c.tend)}<span class="tend">${c.jogados} de ${c.total} jogos · ${c.part} ${c.part===1?'partida':'partidas'}</span></div>`}).join('')}</div>
@@ -328,6 +332,7 @@ function desenhaPerfil(){
     ${CATS.flatMap(c=>c[3]).map(k=>{const j=jogos[k];return `<tr><td><span class="jg">${IC[k]}${GAMES[k].nome}</span></td><td class="r">${j.rec===null?'—':j.rec}</td><td class="r">${j.pos?j.pos+'º de '+j.n:'—'}</td><td class="r hm">${j.part}</td><td class="r">${seta(j.tend)}</td></tr>`}).join('')}
     </tbody></table>`;
   let novoAv=eu.av;
+  if($('pProt'))$('pProt').onclick=async()=>{if(await fluxoProteger(eu.name))desenhaPerfil()};
   $('pEd').onclick=()=>{editando=true;$('pEdBox').hidden=false;$('pEd').parentElement.hidden=true;escolheAv($('pAvs'),eu.av,a=>novoAv=a);$('pNome').focus()};
   $('pCan').onclick=()=>{editando=false;desenhaPerfil()};
   $('pOk').onclick=async()=>{const n=$('pNome').value.trim();if(!n){$('pNome').focus();return}const er=await salvaPerfil(n,novoAv);if(er){erroNome($('pNome'),er);return}editando=false;desenhaPerfil()};$('pNome').addEventListener('input',()=>erroNome($('pNome'),''));
@@ -1756,7 +1761,7 @@ if(!eu.name){
   let bAv=rnd(0,AVS.length-1);$('boas').hidden=false;document.body.style.overflow='hidden';
   escolheAv($('bAvs'),bAv,a=>bAv=a);
   $('bNome').addEventListener('input',()=>{$('bOk').disabled=!$('bNome').value.trim()});
-  const entra=async()=>{const n=$('bNome').value.trim();if(!n)return;const er=await salvaPerfil(n,bAv);if(er){erroNome($('bNome'),er);return}$('boas').hidden=true;document.body.style.overflow=''};$('bNome').addEventListener('input',()=>erroNome($('bNome'),''));
+  const entra=async()=>{const n=$('bNome').value.trim();if(!n)return;const pn=$('bPin').value.trim();if(temFb()&&!/^\d{4,8}$/.test(pn)){erroNome($('bPin'),'Crie um PIN de 4 a 8 números.');return}const er=await salvaPerfil(n,bAv);if(er){erroNome($('bNome'),er);return}if(temFb()&&await esperaAuth()){try{await protegeConta(n,pn)}catch(e){console.warn('PIN',e)}}$('boas').hidden=true;document.body.style.overflow=''};$('bPin').addEventListener('input',()=>erroNome($('bPin'),''));$('bJa').onclick=()=>fluxoEntrar();$('bNome').addEventListener('input',()=>erroNome($('bNome'),''));
   $('bOk').onclick=entra;$('bNome').addEventListener('keydown',e=>{if(e.key==='Enter')entra()});
   setTimeout(()=>$('bNome').focus(),50);
 }
@@ -1792,6 +1797,65 @@ $('sairSim').onclick=()=>{$('sair').hidden=true;retoma();fecha()};
 window.addEventListener('keydown',e=>{if(e.key!=='Escape'||$('modal').hidden)return;if(!$('sair').hidden){$('sair').hidden=true;retoma()}else pedeSair()});
 
 /* ---------- banco de dados: Firebase (Firestore) com login anônimo ---------- */
+/* ---------- conta protegida por PIN (recuperar o perfil em outro aparelho) ---------- */
+const temFb=()=>!!(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey);
+const esperaAuth=async()=>{for(let i=0;i<40&&!authOk();i++)await new Promise(r=>setTimeout(r,250));return authOk()};
+const authOk=()=>{try{return !!(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey&&window.firebase&&firebase.apps.length&&firebase.auth().currentUser)}catch(e){return false}};
+const protegida=()=>{try{return authOk()&&firebase.auth().currentUser.providerData.some(p=>p.providerId==='password')}catch(e){return false}};
+async function emailDe(nome){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('playora:'+normNome(nome)));
+  return [...new Uint8Array(b)].slice(0,16).map(x=>x.toString(16).padStart(2,'0')).join('')+'@playora.app';
+}
+const senhaDe=pin=>pin+'-playora';
+const erroAuth=e=>{const c=e&&e.code||'';
+  if(c==='auth/operation-not-allowed')return 'Falta ativar o login por e-mail e senha no Firebase.';
+  if(c==='auth/email-already-in-use')return 'Já existe uma conta protegida com esse apelido.';
+  if(c==='auth/network-request-failed')return 'Sem internet. Tente de novo.';
+  if(c==='auth/too-many-requests')return 'Muitas tentativas. Espere um pouco e tente de novo.';
+  if(['auth/wrong-password','auth/invalid-credential','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Apelido ou PIN incorreto.';
+  return 'Não deu certo agora. Tente de novo.'};
+async function protegeConta(nome,pin){
+  const u=firebase.auth().currentUser;
+  await u.linkWithCredential(firebase.auth.EmailAuthProvider.credential(await emailDe(nome),senhaDe(pin)));
+}
+async function entraConta(nome,pin){
+  const r=await firebase.auth().signInWithEmailAndPassword(await emailDe(nome),senhaDe(pin));
+  const uid=r.user.uid;ls.set('pf-id',uid);ls.set('pf-nome',nome);
+  try{const d=await firebase.firestore().doc('perfis/'+uid).get();if(d.exists){const v=d.data();if(v.name)ls.set('pf-nome',v.name);if(typeof v.av==='number')ls.set('pf-av',String(v.av))}}catch(e){}
+  location.reload();
+}
+/* modos: 'proteger' (PIN novo), 'entrar' (apelido + PIN), 'confirma' (só o PIN).
+   tenta({nome,pin}) devolve o texto do erro, ou null se deu certo. Resolve true/false */
+function pedeRec(modo,nome0,tenta){
+  return new Promise(res=>{
+    const m=document.createElement('div');m.className='modal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+    const tit={proteger:'Proteja sua conta',entrar:'Entrar na minha conta',confirma:'Confirme seu PIN'}[modo];
+    const txt={proteger:'Crie um PIN de 4 a 8 números. Se você trocar de celular ou o navegador esquecer você, é só entrar com o apelido e o PIN para recuperar tudo.',entrar:'Digite o apelido e o PIN que você criou para recuperar seus pontos e seu histórico.',confirma:'Para trocar o apelido, digite o seu PIN.'}[modo];
+    m.innerHTML=`<div class="board perf"><div class="pstage"><h2 style="font-size:26px">${tit}</h2><p style="margin:0;font-weight:600">${txt}</p>${modo==='entrar'?'<label class="campo">Apelido<input id="rcN" maxlength="18" autocomplete="nickname"></label>':''}<label class="campo">PIN<input id="rcP" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="${modo==='proteger'?'new-password':'current-password'}"></label><p class="status" id="rcE" style="margin:6px 0 0;color:#ff7aa8!important;font-weight:800" hidden></p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="go" id="rcOk">${modo==='entrar'?'Entrar':'Salvar'}</button><button class="ghost" id="rcNo">${modo==='proteger'?'Agora não':'Cancelar'}</button></div></div></div>`;
+    document.body.appendChild(m);document.body.style.overflow='hidden';
+    const q=i=>m.querySelector(i),er=q('#rcE'),pin=q('#rcP'),bt=q('#rcOk');
+    const erro=t=>{er.textContent=t;er.hidden=!t};
+    const fecha=v=>{m.remove();document.body.style.overflow=$('modal').hidden&&$('boas').hidden?'':'hidden';res(v)};
+    let ocupado=false;
+    const ok=async()=>{if(ocupado)return;const p=pin.value.trim(),n=modo==='entrar'?q('#rcN').value.trim():nome0;
+      if(!n){erro('Digite o apelido.');return}
+      if(!/^\d{4,8}$/.test(p)){erro('O PIN tem de 4 a 8 números.');return}
+      ocupado=true;bt.disabled=true;erro('');
+      let e;try{e=await tenta({nome:n,pin:p})}catch(x){e=erroAuth(x)}
+      ocupado=false;bt.disabled=false;
+      if(e){erro(e);return}
+      fecha(true)};
+    bt.onclick=ok;q('#rcNo').onclick=()=>fecha(false);
+    pin.addEventListener('keydown',e=>{if(e.key==='Enter')ok()});
+    setTimeout(()=>(modo==='entrar'?q('#rcN'):pin).focus(),50);
+  });
+}
+const fluxoProteger=nome=>pedeRec('proteger',nome,async r=>{
+  try{await protegeConta(nome,r.pin);return null}catch(e){return erroAuth(e)}});
+const fluxoEntrar=()=>{
+  if(!authOk()){alert('Sem conexão com o servidor. Tente de novo em instantes.');return}
+  return pedeRec('entrar',null,async r=>{try{await entraConta(r.nome,r.pin);return null}catch(e){return erroAuth(e)}})};
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 function pedeCodigo(erro){
   return new Promise(res=>{
     const m=$('codigo'),inp=$('cdIn'),er=$('cdErro');m.hidden=false;document.body.style.overflow='hidden';
@@ -1833,6 +1897,7 @@ const timeout=setTimeout(()=>{st.textContent='O placar compartilhado ainda não 
   try{
     db=await conectaDb();
     if(!db){clearTimeout(timeout);local();return}
+    if(eu.name&&authOk()&&!protegida())setTimeout(()=>{if($('modal').hidden&&$('boas').hidden)fluxoProteger(eu.name)},2500);
     db.collection('scores').onSnapshot(s=>{
       scores=s.docs.map(d=>d.data()).filter(Boolean);render();
       if(!s.metadata.fromCache){clearTimeout(timeout);st.textContent='Placar compartilhado com a família, ao vivo.'}
