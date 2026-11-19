@@ -1810,7 +1810,7 @@ async function emailDe(nome){
 const senhaDe=pin=>pin+'-playora';
 const erroAuth=e=>{const c=e&&e.code||'';
   if(c==='auth/operation-not-allowed')return 'Falta ativar o login por e-mail e senha no Firebase.';
-  if(c==='auth/email-already-in-use')return 'Já existe uma conta protegida com esse apelido.';
+  if(c==='auth/email-already-in-use')return 'Esse apelido já tem PIN. Toque em Agora não e, no Perfil, use Já tenho conta.';
   if(c==='auth/network-request-failed')return 'Sem internet. Tente de novo.';
   if(c==='auth/too-many-requests')return 'Muitas tentativas. Espere um pouco e tente de novo.';
   if(['auth/wrong-password','auth/invalid-credential','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'Apelido ou PIN incorreto.';
