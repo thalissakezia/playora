@@ -9,7 +9,7 @@ service cloud.firestore {
       return logado() && exists(/databases/$(database)/documents/membros/$(request.auth.uid));
     }
     function nomeOk(n) { return n is string && n.size() > 0 && n.size() <= 18; }
-    function jogoOk(g) { return g in ['cobra', 'pulo', 'voo', 'frutas', 'cores', 'prateleira', 'corrida', 'copos', 'bolhas', 'lagoa', 'torre', 'sequencia', 'martelada', 'nave', 'contas', 'memoria2', 'trio', 'padrao', 'javi', 'numeros', 'estrada', 'descida', 'teclas']; }
+    function jogoOk(g) { return g in ['cobra', 'pulo', 'voo', 'frutas', 'cores', 'prateleira', 'corrida', 'copos', 'bolhas', 'lagoa', 'torre', 'sequencia', 'martelada', 'nave', 'contas', 'memoria2', 'trio', 'padrao', 'javi', 'numeros', 'estrada', 'descida', 'teclas', 'cruzadas']; }
 
     // Código da família: guardado em config/familia (campo "codigo"). Ninguém lê nem grava pelo site.
     match /config/{doc} { allow read, write: if false; }
