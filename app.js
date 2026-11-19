@@ -1900,7 +1900,6 @@ const timeout=setTimeout(()=>{st.textContent='O placar compartilhado ainda não 
   try{
     db=await conectaDb();
     if(!db){clearTimeout(timeout);local();return}
-    if(eu.name&&authOk()&&!protegida()&&ls.get('pf-lembra')!==new Date().toDateString())setTimeout(()=>{if($('modal').hidden&&$('boas').hidden&&$('perfil').hidden){ls.set('pf-lembra',new Date().toDateString());fluxoProteger(eu.name)}},2500);
     db.collection('scores').onSnapshot(s=>{
       scores=s.docs.map(d=>d.data()).filter(Boolean);render();
       if(!s.metadata.fromCache){clearTimeout(timeout);st.textContent='Placar compartilhado com a família, ao vivo.'}
