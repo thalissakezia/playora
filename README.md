@@ -17,13 +17,7 @@ Jogue sozinho ou desafie a família: cada recorde vai para um placar compartilha
   <img src="docs/print-2-inicio.png" alt="Tela inicial" width="240">
 </p>
 
-Para acrescentar mais prints: coloque a imagem na pasta `docs/` e inclua uma linha `<img src="docs/nome-da-imagem.png" width="240">` aqui.
-
-### Vídeo
-
-Vídeo de demonstração: em breve.
-
-Para acrescentar: edite este README no GitHub, apague a linha acima e arraste o arquivo de vídeo para dentro do editor. O GitHub gera o link sozinho.
+---
 
 ## O que tem
 
